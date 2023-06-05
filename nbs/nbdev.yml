@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "beetroot"
+  site-url: "https://spather.github.io/beetroot"
+  description: "A simple tool to export Jupyter notebooks to markdown"
+  repo-branch: main
+  repo-url: "https://github.com/spather/beetroot"
