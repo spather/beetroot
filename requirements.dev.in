@@ -8,3 +8,4 @@ black
 ipykernel
 mypy
 nbdev
+pip-tools
