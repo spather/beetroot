@@ -9,3 +9,7 @@ ipykernel
 mypy
 nbdev
 pip-tools
+
+# The deps below are only required to run some of the examples in the
+# test case notebooks, but not for the core of beetroot.
+matplotlib
