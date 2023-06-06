@@ -43,3 +43,12 @@ source ~/venv/venv-beetroot-dev/bin/activate
 ``` sh
 pip install -r requirements.dev.txt
 ```
+
+### Before committing changes
+
+Run the following to ensure all dependencies are generated from
+notebooks and notebooks are cleaned:
+
+``` sh
+nbdev_export && nbdev_test && nbdev_clean && nbdev_clean --fname testcase_notebooks/ && nbdev_readme
+```
