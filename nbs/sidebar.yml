@@ -1,0 +1,8 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_source.ipynb
+      - 01_outputs.ipynb
+      - 02_api.ipynb
+      - testcase_notebook.ipynb
