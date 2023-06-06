@@ -5,16 +5,89 @@ __all__ = ['emit_python_source', 'emit_markdown_source']
 
 # %% ../nbs/00_source.ipynb 4
 import io
-from typing import Iterable
+from typing import Iterable, Tuple
 
 # %% ../nbs/00_source.ipynb 5
-def emit_python_source(source: Iterable[str], stream: io.TextIOBase):
-    stream.write("```python\n")
-    for line in source:
-        stream.write(line)
-    stream.write("\n```\n\n")
+def is_directive_line(line: str):
+    return line.startswith("#|") or line.startswith("# |")
+
+
+def parse_directive_line(line: str) -> Tuple[str, bool | None]:
+    assert is_directive_line(line)
+
+    directive = line.lstrip("# |").strip()
+    parts = [part.strip() for part in directive.split(":")]
+
+    # A directive is either a single key or key: value
+    assert len(parts) == 1 or len(parts) == 2
+    key, *value = parts
+    value = value[0] if value else None
+
+    # Deal with string forms of true and false
+    # These directives are technically YAML, so allowing all the values
+    # for bool per [the spec](https://yaml.org/type/bool.html).
+
+    true_vals = [
+        "y",
+        "Y",
+        "yes",
+        "Yes",
+        "YES",
+        "true",
+        "True",
+        "TRUE",
+        "on",
+        "On",
+        "ON",
+    ]
+    false_vals = [
+        "n",
+        "N",
+        "no",
+        "No",
+        "NO",
+        "false",
+        "False",
+        "FALSE",
+        "off",
+        "Off",
+        "OFF",
+    ]
+
+    if value in true_vals:
+        value = True
+    elif value in false_vals:
+        value = False
+
+    return key, value
 
 # %% ../nbs/00_source.ipynb 7
+def emit_python_source(source: Iterable[str], stream: io.TextIOBase):
+    # Extract directives
+    directives = {}
+    i = 0  # initialize explicitly because `source` may be empty
+    for i, line in enumerate(source):
+        if is_directive_line(line):
+            key, value = parse_directive_line(line)
+            directives[key] = value
+        else:
+            break
+
+    # Handle directives per https://quarto.org/docs/reference/cells/cells-jupyter.html#code-output
+    # and https://quarto.org/docs/reference/cells/cells-jupyter.html#cell-output.
+
+    should_echo = "echo" not in directives or directives["echo"]
+    should_show_output = "output" not in directives or directives["output"]
+
+    if should_echo:
+        stream.write("```python\n")
+        for line in source[i:]:
+            stream.write(line)
+        stream.write("\n```\n\n")
+
+    return should_show_output
+
+# %% ../nbs/00_source.ipynb 10
 def emit_markdown_source(markdown: Iterable[str], stream: io.TextIOBase):
     for line in markdown:
         stream.write(line)

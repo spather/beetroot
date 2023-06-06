@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['export_notebook']
 
-# %% ../nbs/02_api.ipynb 4
+# %% ../nbs/02_api.ipynb 5
 import io
 from IPython.display import Markdown
 import json
@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from typing import Dict
 
-# %% ../nbs/02_api.ipynb 5
+# %% ../nbs/02_api.ipynb 6
 from .source import emit_markdown_source, emit_python_source
 from beetroot.outputs import (
     emit_display_data_output,
@@ -19,7 +19,7 @@ from beetroot.outputs import (
     emit_stream_output,
 )
 
-# %% ../nbs/02_api.ipynb 6
+# %% ../nbs/02_api.ipynb 7
 def export_notebook(nb_json: Dict) -> str:
     stream = io.StringIO()
     for cell in nb_json["cells"]:
@@ -27,8 +27,11 @@ def export_notebook(nb_json: Dict) -> str:
             emit_markdown_source(cell["source"], stream)
             stream.write("\n")
         elif cell["cell_type"] == "code":
-            emit_python_source(cell["source"], stream)
+            should_show_output = emit_python_source(cell["source"], stream)
             stream.write("\n")
+
+            if not should_show_output:
+                continue
 
             for output in cell["outputs"]:
                 output_type = output["output_type"]
