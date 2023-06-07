@@ -16,8 +16,24 @@ def br_export():
     parser.add_argument(
         "nb_filename", type=str, help="Full path to the notebook to export"
     )
+    parser.add_argument(
+        "output_dir",
+        type=str,
+        help="Output directory for the markdown and associated files",
+    )
     args = parser.parse_args()
 
+    nb_path = Path(args.nb_filename)
+
+    output_path = Path(args.output_dir)
     nb_json = json.loads(Path(args.nb_filename).read_text())
-    markdown = export_notebook(nb_json)
-    print(markdown)
+    markdown, completions = export_notebook(nb_json)
+
+    # Run the completions
+    for completion in completions:
+        completion(output_path)
+
+    # Write the markdown to an output file
+    md_filename = output_path / nb_path.with_suffix(".md").name
+    with open(md_filename, "w") as md_file:
+        md_file.write(markdown)

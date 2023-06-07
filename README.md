@@ -24,9 +24,24 @@ from pathlib import Path
 
 from beetroot.api import export_notebook
 
-nb_path = 'path/to/notebook'
-nb_json = json.loads(Path(nb_path).read_text())
-markdown = export_notebook(nb_json)
+# Input and output paths
+nb_path = Path('path/to/notebook.ipynb')
+output_path = Path('path/to/output/directory')
+
+# Load the notebook contents as JSON
+nb_json = json.loads(nb_path.read_text())
+
+# Export the notebook
+markdown, completions = export_notebook(nb_json)
+
+# Run the completions to write all external files
+for completion in completions:
+    completion(output_path)
+
+# Write the markdown to an output file
+md_filename = output_path / nb_path.with_suffix('.md').name
+with open(md_filename, 'w') as md_file:
+    md_file.write(markdown)
 ```
 
 ## Dev Environment Setup

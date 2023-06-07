@@ -5,10 +5,6 @@ __all__ = ['export_notebook']
 
 # %% ../nbs/02_api.ipynb 5
 import io
-from IPython.display import Markdown
-import json
-import os
-from pathlib import Path
 from typing import Dict
 
 # %% ../nbs/02_api.ipynb 6
@@ -22,6 +18,7 @@ from beetroot.outputs import (
 # %% ../nbs/02_api.ipynb 7
 def export_notebook(nb_json: Dict) -> str:
     stream = io.StringIO()
+    completions = []
     for cell in nb_json["cells"]:
         if cell["cell_type"] == "markdown":
             emit_markdown_source(cell["source"], stream)
@@ -38,10 +35,14 @@ def export_notebook(nb_json: Dict) -> str:
                 if output_type == "stream":
                     emit_stream_output(output, stream)
                 elif output_type == "display_data":
-                    emit_display_data_output(output, stream)
+                    completion = emit_display_data_output(output, stream)
+                    if completion:
+                        completions.append(completion)
                 elif output_type == "execute_result":
-                    emit_execute_result_output(output, stream)
+                    completion = emit_execute_result_output(output, stream)
+                    if completion:
+                        completions.append(completion)
                 stream.write("\n")
 
     stream.seek(0)
-    return stream.read()
+    return stream.read(), completions

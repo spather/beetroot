@@ -4,9 +4,12 @@
 __all__ = ['emit_stream_output', 'emit_execute_result_output', 'emit_display_data_output']
 
 # %% ../nbs/01_outputs.ipynb 4
+import base64
 import io
+from pathlib import Path
 from textwrap import dedent
-from typing import Dict, Iterable
+from typing import Callable, Dict, Iterable, Optional
+import uuid
 
 # %% ../nbs/01_outputs.ipynb 5
 def emit_lines(lines: Iterable[str], stream: io.TextIOBase):
@@ -22,16 +25,43 @@ def emit_plaintext(lines: Iterable[str], stream: io.TextIOBase):
     stream.write("```\n")
 
 
-def emit_output_data(data: Dict, stream: io.TextIOBase):
+def emit_image_data(
+    img_data_b64: str,
+    stream: io.TextIOBase,
+    filename_generator: Callable[[], str] = lambda: str(uuid.uuid4()),
+) -> Optional[Callable[[Path], None]]:
+    bytes = base64.b64decode(img_data_b64)
+    filename = f"{filename_generator()}.png"
+    images_dir = "images/"
+
+    def completion(output_dir: Path):
+        nonlocal bytes, filename, images_dir
+
+        (output_dir / images_dir).mkdir(exist_ok=True)
+
+        with open(output_dir / images_dir / filename, "wb") as file:
+            file.write(bytes)
+
+    stream.write(f"![]({Path(images_dir)/filename})")
+    return completion
+
+
+def emit_output_data(
+    data: Dict, stream: io.TextIOBase
+) -> Optional[Callable[[Path], None]]:
     lines_mimetypes = ["text/markdown", "text/latex", "text/html"]
 
     for mimetype in lines_mimetypes:
         if mimetype in data:
             emit_lines(data[mimetype], stream)
-            return
+            return None
+
+    if "image/png" in data:
+        return emit_image_data(data["image/png"], stream)
 
     if "text/plain" in data:
         emit_plaintext(data["text/plain"], stream)
+        return None
 
 # %% ../nbs/01_outputs.ipynb 6
 def emit_stream_output(output: Dict, stream: io.TextIOBase):
@@ -42,17 +72,21 @@ def emit_stream_output(output: Dict, stream: io.TextIOBase):
     emit_plaintext(text, stream)
 
 # %% ../nbs/01_outputs.ipynb 8
-def emit_execute_result_output(output: Dict, stream: io.TextIOBase):
+def emit_execute_result_output(
+    output: Dict, stream: io.TextIOBase
+) -> Optional[Callable[[Path], None]]:
     """Emits markdown from [`execute_result`](https://nbformat.readthedocs.io/en/latest/format_description.html#execute-result) outputs"""
 
     assert output["output_type"] == "execute_result"
     data = output["data"]
-    emit_output_data(data, stream)
+    return emit_output_data(data, stream)
 
-# %% ../nbs/01_outputs.ipynb 10
-def emit_display_data_output(output: Dict, stream: io.TextIOBase):
+# %% ../nbs/01_outputs.ipynb 11
+def emit_display_data_output(
+    output: Dict, stream: io.TextIOBase
+) -> Optional[Callable[[Path], None]]:
     """Emits markdown from [`display_data`](https://nbformat.readthedocs.io/en/latest/format_description.html#display-data) outputs"""
 
     assert output["output_type"] == "display_data"
     data = output["data"]
-    emit_output_data(data, stream)
+    return emit_output_data(data, stream)
