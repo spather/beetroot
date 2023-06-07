@@ -13,7 +13,7 @@ pip install beetroot
 From the command-line:
 
 ``` sh
-br_export path/to/notebook
+br_export path/to/notebook.ipynb path/to/output_directory
 ```
 
 As a Python API:
