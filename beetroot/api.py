@@ -5,18 +5,19 @@ __all__ = ['export_notebook']
 
 # %% ../nbs/02_api.ipynb 5
 import io
-from typing import Dict
+from typing import Dict, Iterable, Tuple
 
 # %% ../nbs/02_api.ipynb 6
 from .source import emit_markdown_source, emit_python_source
 from beetroot.outputs import (
+    Completion,
     emit_display_data_output,
     emit_execute_result_output,
     emit_stream_output,
 )
 
 # %% ../nbs/02_api.ipynb 7
-def export_notebook(nb_json: Dict) -> str:
+def export_notebook(nb_json: Dict) -> Tuple[str, Iterable[Completion]]:
     stream = io.StringIO()
     completions = []
     for cell in nb_json["cells"]:

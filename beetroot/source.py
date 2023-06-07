@@ -5,14 +5,14 @@ __all__ = ['emit_python_source', 'emit_markdown_source']
 
 # %% ../nbs/00_source.ipynb 4
 import io
-from typing import Iterable, Tuple
+from typing import Iterable, Optional, Sequence, Tuple
 
 # %% ../nbs/00_source.ipynb 5
 def is_directive_line(line: str):
     return line.startswith("#|") or line.startswith("# |")
 
 
-def parse_directive_line(line: str) -> Tuple[str, bool | None]:
+def parse_directive_line(line: str) -> Tuple[str, Optional[bool]]:
     assert is_directive_line(line)
 
     directive = line.lstrip("# |").strip()
@@ -20,8 +20,8 @@ def parse_directive_line(line: str) -> Tuple[str, bool | None]:
 
     # A directive is either a single key or key: value
     assert len(parts) == 1 or len(parts) == 2
-    key, *value = parts
-    value = value[0] if value else None
+    key, *value_list = parts
+    value_str: Optional[str] = value_list[0] if value_list else None
 
     # Deal with string forms of true and false
     # These directives are technically YAML, so allowing all the values
@@ -54,15 +54,16 @@ def parse_directive_line(line: str) -> Tuple[str, bool | None]:
         "OFF",
     ]
 
-    if value in true_vals:
+    value: Optional[bool] = None
+    if value_str in true_vals:
         value = True
-    elif value in false_vals:
+    elif value_str in false_vals:
         value = False
 
     return key, value
 
 # %% ../nbs/00_source.ipynb 7
-def emit_python_source(source: Iterable[str], stream: io.TextIOBase):
+def emit_python_source(source: Sequence[str], stream: io.TextIOBase):
     # Extract directives
     directives = {}
     i = 0  # initialize explicitly because `source` may be empty
