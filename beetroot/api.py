@@ -5,14 +5,12 @@ __all__ = ['export_notebook']
 
 # %% ../nbs/03_api.ipynb 5
 import io
-from typing import Callable, Dict, Iterable, Reversible, Sequence, Tuple
+from typing import Dict, Iterable, Reversible, Sequence, Tuple
 
 # %% ../nbs/03_api.ipynb 6
-from .transformations import emit_with_transformations, Transformer
+from .transformations import Transformer
 from beetroot.source import (
-    emit_markdown_source,
-    emit_python_source,
-    parse_and_extract_directives_from_python_source,
+    SourceHandler,
 )
 from beetroot.outputs import (
     Completion,
@@ -26,29 +24,16 @@ def export_notebook(
     nb_json: Dict, transformers_map: Dict[str, Reversible[Transformer]] = {}
 ) -> Tuple[str, Iterable[Completion]]:
     stream = io.StringIO()
+    source_handler = SourceHandler(stream, transformers_map)
+
     completions = []
     for cell in nb_json["cells"]:
         if cell["cell_type"] == "markdown":
-            emit_with_transformations(
-                transformers_map.get("markdown/source", []),
-                cell["source"],
-                emit_markdown_source,
-                stream,
-            )
+            source_handler.emit_markdown(cell["source"])
             stream.write("\n")
         elif cell["cell_type"] == "code":
-            python_source, directives = parse_and_extract_directives_from_python_source(
-                cell["source"]
-            )
-
-            # Handle directives per https://quarto.org/docs/reference/cells/cells-jupyter.html#code-output
-            # and https://quarto.org/docs/reference/cells/cells-jupyter.html#cell-output.
-            should_echo = "echo" not in directives or directives["echo"]
-            should_show_output = "output" not in directives or directives["output"]
-
-            if should_echo:
-                emit_python_source(python_source, stream)
-                stream.write("\n")
+            should_show_output = source_handler.emit_python_source(cell["source"])
+            stream.write("\n")
 
             if not should_show_output:
                 continue
