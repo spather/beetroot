@@ -5,7 +5,7 @@ __all__ = ['emit_python_source', 'emit_markdown_source']
 
 # %% ../nbs/00_source.ipynb 4
 import io
-from typing import Iterable, Optional, Sequence, Tuple
+from typing import Dict, Iterable, Optional, Sequence, Tuple
 
 # %% ../nbs/00_source.ipynb 5
 def is_directive_line(line: str):
@@ -63,8 +63,9 @@ def parse_directive_line(line: str) -> Tuple[str, Optional[bool]]:
     return key, value
 
 # %% ../nbs/00_source.ipynb 7
-def emit_python_source(source: Sequence[str], stream: io.TextIOBase):
-    # Extract directives
+def parse_and_extract_directives_from_python_source(
+    source: Sequence[str],
+) -> Tuple[Sequence[str], Dict[str, Optional[bool]]]:
     directives = {}
     i = 0  # initialize explicitly because `source` may be empty
     for i, line in enumerate(source):
@@ -72,7 +73,14 @@ def emit_python_source(source: Sequence[str], stream: io.TextIOBase):
             key, value = parse_directive_line(line)
             directives[key] = value
         else:
+            # Break out on hitting the first non-directive line
             break
+
+    return source[i:], directives
+
+# %% ../nbs/00_source.ipynb 9
+def emit_python_source(source: Sequence[str], stream: io.TextIOBase):
+    source, directives = parse_and_extract_directives_from_python_source(source)
 
     # Handle directives per https://quarto.org/docs/reference/cells/cells-jupyter.html#code-output
     # and https://quarto.org/docs/reference/cells/cells-jupyter.html#cell-output.
@@ -82,13 +90,13 @@ def emit_python_source(source: Sequence[str], stream: io.TextIOBase):
 
     if should_echo:
         stream.write("```python\n")
-        for line in source[i:]:
+        for line in source:
             stream.write(line)
         stream.write("\n```\n\n")
 
     return should_show_output
 
-# %% ../nbs/00_source.ipynb 10
+# %% ../nbs/00_source.ipynb 11
 def emit_markdown_source(markdown: Iterable[str], stream: io.TextIOBase):
     for line in markdown:
         stream.write(line)

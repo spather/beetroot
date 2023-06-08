@@ -24,4 +24,6 @@ d = { 'settings': { 'branch': 'main',
             'beetroot.source': { 'beetroot.source.emit_markdown_source': ('source.html#emit_markdown_source', 'beetroot/source.py'),
                                  'beetroot.source.emit_python_source': ('source.html#emit_python_source', 'beetroot/source.py'),
                                  'beetroot.source.is_directive_line': ('source.html#is_directive_line', 'beetroot/source.py'),
+                                 'beetroot.source.parse_and_extract_directives_from_python_source': ( 'source.html#parse_and_extract_directives_from_python_source',
+                                                                                                      'beetroot/source.py'),
                                  'beetroot.source.parse_directive_line': ('source.html#parse_directive_line', 'beetroot/source.py')}}}
