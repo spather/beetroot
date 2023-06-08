@@ -67,3 +67,11 @@ notebooks and notebooks are cleaned:
 ``` sh
 nbdev_export && mypy beetroot/ && nbdev_test && nbdev_clean && nbdev_clean --fname test_artifacts/ && nbdev_readme
 ```
+
+### Useful Tricks
+
+Search for a string in all python files (`.ipynb` and `.py` files):
+
+``` sh
+find . -name '_proc' -prune -o \( -name '*.ipynb' -o -name '*.py' \) -type f -exec grep -nH 'export_notebook' {} \;
+```
