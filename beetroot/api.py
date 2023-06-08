@@ -31,8 +31,11 @@ def export_notebook(
             source_handler.emit_markdown(cell["source"])
             stream.write("\n")
         elif cell["cell_type"] == "code":
-            should_show_output = source_handler.emit_python_source(cell["source"])
-            stream.write("\n")
+            did_echo, should_show_output = source_handler.emit_python_source(
+                cell["source"]
+            )
+            if did_echo:
+                stream.write("\n")
 
             if not should_show_output:
                 continue

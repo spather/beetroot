@@ -114,7 +114,7 @@ class SourceHandler:
             self.stream,
         )
 
-    def emit_python_source(self, lines: Sequence[str]) -> bool:
+    def emit_python_source(self, lines: Sequence[str]) -> Tuple[bool, bool]:
         python_source, directives = parse_and_extract_directives_from_python_source(
             lines
         )
@@ -132,4 +132,4 @@ class SourceHandler:
                 self.stream,
             )
 
-        return should_show_output
+        return should_echo, should_show_output
