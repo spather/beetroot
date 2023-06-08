@@ -8,7 +8,11 @@ import io
 from typing import Callable, Dict, Iterable, Reversible, Sequence, Tuple
 
 # %% ../nbs/02_api.ipynb 6
-from .source import emit_markdown_source, emit_python_source
+from beetroot.source import (
+    emit_markdown_source,
+    emit_python_source,
+    parse_and_extract_directives_from_python_source,
+)
 from beetroot.outputs import (
     Completion,
     emit_display_data_output,
@@ -75,8 +79,18 @@ def export_notebook(
             )
             stream.write("\n")
         elif cell["cell_type"] == "code":
-            should_show_output = emit_python_source(cell["source"], stream)
-            stream.write("\n")
+            python_source, directives = parse_and_extract_directives_from_python_source(
+                cell["source"]
+            )
+
+            # Handle directives per https://quarto.org/docs/reference/cells/cells-jupyter.html#code-output
+            # and https://quarto.org/docs/reference/cells/cells-jupyter.html#cell-output.
+            should_echo = "echo" not in directives or directives["echo"]
+            should_show_output = "output" not in directives or directives["output"]
+
+            if should_echo:
+                emit_python_source(python_source, stream)
+                stream.write("\n")
 
             if not should_show_output:
                 continue
