@@ -125,6 +125,11 @@ class SourceHandler:
         should_show_output = "output" not in directives or directives["output"] == True
 
         if should_echo:
-            emit_python_source(python_source, self.stream)
+            emit_with_transformations(
+                self.transformers_map.get("python/source", []),
+                python_source,
+                emit_python_source,
+                self.stream,
+            )
 
         return should_show_output
