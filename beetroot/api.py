@@ -5,7 +5,7 @@ __all__ = ['export_notebook']
 
 # %% ../nbs/03_api.ipynb 5
 import io
-from typing import Dict, Iterable, Reversible, Sequence, Tuple
+from typing import Dict, List, Iterable, Reversible, Sequence, Tuple
 
 # %% ../nbs/03_api.ipynb 6
 from .transformations import Transformer
@@ -14,9 +14,7 @@ from beetroot.source import (
 )
 from beetroot.outputs import (
     Completion,
-    emit_display_data_output,
-    emit_execute_result_output,
-    emit_stream_output,
+    OutputHandler,
 )
 
 # %% ../nbs/03_api.ipynb 7
@@ -25,8 +23,9 @@ def export_notebook(
 ) -> Tuple[str, Iterable[Completion]]:
     stream = io.StringIO()
     source_handler = SourceHandler(stream, transformers_map)
+    output_handler = OutputHandler(stream, transformers_map)
 
-    completions = []
+    completions: List[Completion] = []
     for cell in nb_json["cells"]:
         if cell["cell_type"] == "markdown":
             source_handler.emit_markdown(cell["source"])
@@ -39,17 +38,7 @@ def export_notebook(
                 continue
 
             for output in cell["outputs"]:
-                output_type = output["output_type"]
-                if output_type == "stream":
-                    emit_stream_output(output, stream)
-                elif output_type == "display_data":
-                    completion = emit_display_data_output(output, stream)
-                    if completion:
-                        completions.append(completion)
-                elif output_type == "execute_result":
-                    completion = emit_execute_result_output(output, stream)
-                    if completion:
-                        completions.append(completion)
+                completions.extend(output_handler.handle_output(output))
                 stream.write("\n")
 
     stream.seek(0)
