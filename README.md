@@ -65,5 +65,5 @@ Run the following to ensure all dependencies are generated from
 notebooks and notebooks are cleaned:
 
 ``` sh
-nbdev_export && nbdev_test && nbdev_clean && nbdev_clean --fname testcase_notebooks/ && nbdev_readme
+nbdev_export && mypy beetroot/ && nbdev_test && nbdev_clean && nbdev_clean --fname testcase_notebooks/ && nbdev_readme
 ```
