@@ -2,7 +2,8 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_source.ipynb
-      - 01_outputs.ipynb
-      - 02_api.ipynb
-      - 03_cli.ipynb
+      - 00_transformations.ipynb
+      - 01_source.ipynb
+      - 02_outputs.ipynb
+      - 03_api.ipynb
+      - 04_cli.ipynb
