@@ -13,45 +13,55 @@ class SourceHandler(Protocol):
     def handle_markdown(self, lines: Sequence[str]):
         """Handle the source lines for a markdown cell
 
-        Params:
-            lines: The lines of source text
+        Parameters
+        ----------
+        lines
+            The lines of source text
         """
         pass
 
     def handle_python_source(self, lines: Sequence[str]) -> bool:
         """Handle the source lines for a python code cell
+        
+        Parameters
+        ----------
+        lines 
+            The lines of source text
 
-        Params:
-            lines: The lines of source text
-
-        Returns:
-            bool: Indicates whether the output should be handled for
-                  this cell.
+        Returns
+        -------
+        bool 
+            Indicates whether the output should be handled for \
+            this cell.
         """
         return False
 
-# %% ../nbs/00_api.ipynb 7
+# %% ../nbs/00_api.ipynb 9
 TOutputResult = TypeVar("TOutputResult", covariant=True)
 
-# %% ../nbs/00_api.ipynb 8
+# %% ../nbs/00_api.ipynb 10
 class OutputHandler(Protocol[TOutputResult]):
     """High-level API for handling cell outputs"""
 
     def handle_output(self, output: Dict) -> TOutputResult:
         """Handle a single cell output
+        
+        Parameters
+        ----------
+        output
+            a Dict representing a JSON output element as \ 
+            defined in the [notebook file format](https://nbformat.readthedocs.io/en/latest/format_description.html#code-cell-outputs)
 
-        Params:
-            output: a Dict representing a JSON output element as
-                    defined in the [notebook file format](https://nbformat.readthedocs.io/en/latest/format_description.html#code-cell-outputs)
-
-        Returns:
-            TOutputResult: a result whose type is defined by the implementation
-                           (typically a callable that completes any
-                           asynchronous processing required)
+        Returns
+        -------
+        TOutputResult
+            a result whose type is defined by the implementation \
+            (typically a callable that completes any \
+            asynchronous processing required)                    
         """
         pass
 
-# %% ../nbs/00_api.ipynb 9
+# %% ../nbs/00_api.ipynb 12
 def export_notebook(
     nb_json: Dict,
     source_handler: SourceHandler,
