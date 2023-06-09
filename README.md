@@ -13,7 +13,7 @@ pip install beetroot
 From the command-line:
 
 ``` sh
-br_export path/to/notebook.ipynb path/to/output_directory
+br_export_md path/to/notebook.ipynb path/to/output_directory
 ```
 
 As a Python API:
@@ -22,7 +22,7 @@ As a Python API:
 import json 
 from pathlib import Path 
 
-from beetroot.api import export_notebook
+from beetroot.markdown.api import export_markdown_notebook
 
 # Input and output paths
 nb_path = Path('path/to/notebook.ipynb')
@@ -32,10 +32,11 @@ output_path = Path('path/to/output/directory')
 nb_json = json.loads(nb_path.read_text())
 
 # Export the notebook
-markdown, completion = export_notebook(nb_json)
+markdown, completions = export_markdown_notebook(nb_json)
 
 # Run the completion to write all external files
-completion(output_path)
+for completion in completions:
+    completion(output_path)
 
 # Write the markdown to an output file
 md_filename = output_path / nb_path.with_suffix('.md').name

@@ -2,10 +2,11 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_transformations.ipynb
       - 03_api.ipynb
       - 04_cli.ipynb
       - section: markdown
         contents:
+          - markdown/00_transformations.ipynb
           - markdown/01_source.ipynb
           - markdown/02_outputs.ipynb
+          - markdown/03_markdown_api.ipynb
