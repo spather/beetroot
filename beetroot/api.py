@@ -29,10 +29,10 @@ def export_notebook(
     completion = no_op_completion
     for cell in nb_json["cells"]:
         if cell["cell_type"] == "markdown":
-            source_handler.emit_markdown(cell["source"])
+            source_handler.handle_markdown(cell["source"])
             stream.write("\n")
         elif cell["cell_type"] == "code":
-            did_echo, should_show_output = source_handler.emit_python_source(
+            did_echo, should_show_output = source_handler.handle_python_source(
                 cell["source"]
             )
             if did_echo:

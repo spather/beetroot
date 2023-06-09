@@ -88,6 +88,8 @@ def emit_output_data(
 
 # %% ../nbs/02_outputs.ipynb 9
 class OutputHandler:
+    """High-level API for handling cell outputs"""
+
     def __init__(
         self,
         stream: io.TextIOBase,

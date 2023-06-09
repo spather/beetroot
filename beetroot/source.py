@@ -88,7 +88,7 @@ def parse_and_extract_directives_from_python_source(
     return source[i:], directives
 
 # %% ../nbs/01_source.ipynb 12
-def emit_python_source(source: Sequence[str], stream: io.TextIOBase):
+def handle_python_source(source: Sequence[str], stream: io.TextIOBase):
     stream.write("```python\n")
     for line in source:
         stream.write(line)
@@ -96,7 +96,7 @@ def emit_python_source(source: Sequence[str], stream: io.TextIOBase):
 
 # %% ../nbs/01_source.ipynb 13
 class SourceHandler:
-    """High-level API for emitting cell source"""
+    """High-level API for handling cell source"""
 
     def __init__(
         self,
@@ -106,7 +106,7 @@ class SourceHandler:
         self.stream = stream
         self.transformers_map = transformers_map
 
-    def emit_markdown(self, lines: Sequence[str]):
+    def handle_markdown(self, lines: Sequence[str]):
         emit_with_transformation(
             self.transformers_map.get("markdown/source", Transformer()),
             lines,
@@ -114,7 +114,7 @@ class SourceHandler:
             self.stream,
         )
 
-    def emit_python_source(self, lines: Sequence[str]) -> Tuple[bool, bool]:
+    def handle_python_source(self, lines: Sequence[str]) -> Tuple[bool, bool]:
         python_source, directives = parse_and_extract_directives_from_python_source(
             lines
         )
@@ -128,7 +128,7 @@ class SourceHandler:
             emit_with_transformation(
                 self.transformers_map.get("python/source", Transformer()),
                 python_source,
-                emit_python_source,
+                handle_python_source,
                 self.stream,
             )
 
