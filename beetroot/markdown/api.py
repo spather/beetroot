@@ -8,7 +8,7 @@ import io
 from typing import Dict, Iterable, Sequence, Tuple
 
 # %% ../../nbs/markdown/03_markdown_api.ipynb 6
-from ..api import export_notebook
+from ..api import handle_notebook
 
 from .transformations import Transformer
 from beetroot.markdown.source import (
@@ -24,7 +24,7 @@ def export_markdown_notebook(
     source_handler = MarkdownSourceHandler(stream, transformers_map)
     output_handler = MarkdownOutputHandler(stream, transformers_map)
 
-    completions = export_notebook(nb_json, source_handler, output_handler)
+    completions = handle_notebook(nb_json, source_handler, output_handler)
 
     stream.seek(0)
     return stream.read(), completions
