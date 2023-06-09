@@ -5,7 +5,7 @@ __all__ = ['Transformer', 'MultiTransformer', 'emit_with_transformation']
 
 # %% ../../nbs/markdown/00_transformations.ipynb 5
 import io
-from typing import Callable, Reversible, Sequence
+from typing import Callable, Iterable, Sequence
 
 # %% ../../nbs/markdown/00_transformations.ipynb 6
 class Transformer:
@@ -28,8 +28,10 @@ class Transformer:
 
 # %% ../../nbs/markdown/00_transformations.ipynb 10
 class MultiTransformer:
-    def __init__(self, transformers: Reversible[Transformer]):
-        self.transformers = transformers
+    def __init__(self, transformers: Iterable[Transformer]):
+        # Store the passed in transformers as a list
+        # so that we can later call reverse() on it.
+        self.transformers = list(transformers)
 
     def emit_before(self, stream: io.TextIOBase):
         # Emit all the before output from the transformers.
