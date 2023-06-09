@@ -10,7 +10,7 @@ from typing import Dict, Iterable, Sequence, Tuple
 # %% ../../nbs/markdown/03_markdown_api.ipynb 6
 from ..api import handle_notebook
 
-from .transformations import Transformer
+from .transformations import ReplaceSingleDollarDelimiters, Transformer
 from beetroot.markdown.source import (
     MarkdownSourceHandler,
 )
