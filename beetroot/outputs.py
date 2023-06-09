@@ -3,21 +3,21 @@
 # %% auto 0
 __all__ = ['Completion', 'OutputHandler']
 
-# %% ../nbs/02_outputs.ipynb 4
+# %% ../nbs/02_outputs.ipynb 5
 import base64
 import io
 from pathlib import Path
 from textwrap import dedent
-from typing import Callable, Dict, Iterable, List, Reversible
+from typing import Callable, Dict, Iterable, List
 import uuid
 
-# %% ../nbs/02_outputs.ipynb 5
-from .transformations import emit_with_transformations, Transformer
-
 # %% ../nbs/02_outputs.ipynb 6
-Completion = Callable[[Path], None]
+from .transformations import emit_with_transformation, Transformer
 
 # %% ../nbs/02_outputs.ipynb 7
+Completion = Callable[[Path], None]
+
+# %% ../nbs/02_outputs.ipynb 8
 def emit_lines(lines: Iterable[str], stream: io.TextIOBase):
     for line in lines:
         stream.write(line)
@@ -53,17 +53,15 @@ def emit_image_data(
 
 
 def emit_output_data(
-    data: Dict,
-    stream: io.TextIOBase,
-    transformers_map: Dict[str, Reversible[Transformer]] = {},
+    data: Dict, stream: io.TextIOBase, transformers_map: Dict[str, Transformer] = {}
 ) -> Iterable[Completion]:
     lines_mimetypes = ["text/markdown", "text/latex", "text/html"]
 
     completions: Iterable[Completion] = []
     for mimetype in lines_mimetypes:
         if mimetype in data:
-            emit_with_transformations(
-                transformers_map.get(f"{mimetype}/data/output", []),
+            emit_with_transformation(
+                transformers_map.get(f"{mimetype}/data/output", Transformer()),
                 data[mimetype],
                 emit_lines,
                 stream,
@@ -75,8 +73,8 @@ def emit_output_data(
         return emit_image_data(data["image/png"], stream)
 
     if "text/plain" in data:
-        emit_with_transformations(
-            transformers_map.get("text/plain/data/output", []),
+        emit_with_transformation(
+            transformers_map.get("text/plain/data/output", Transformer()),
             data["text/plain"],
             emit_plaintext,
             stream,
@@ -86,12 +84,12 @@ def emit_output_data(
 
     return completions
 
-# %% ../nbs/02_outputs.ipynb 8
+# %% ../nbs/02_outputs.ipynb 9
 class OutputHandler:
     def __init__(
         self,
         stream: io.TextIOBase,
-        transformers_map: Dict[str, Reversible[Transformer]] = {},
+        transformers_map: Dict[str, Transformer] = {},
     ):
         self.stream = stream
         self.transformers_map = transformers_map
@@ -101,8 +99,8 @@ class OutputHandler:
         output_type = output["output_type"]
         if output_type == "stream":
             # Handle [stream output](https://nbformat.readthedocs.io/en/latest/format_description.html#stream-output).
-            emit_with_transformations(
-                self.transformers_map.get("stream/output", []),
+            emit_with_transformation(
+                self.transformers_map.get("stream/output", Transformer()),
                 output["text"],
                 emit_plaintext,
                 self.stream,

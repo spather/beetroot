@@ -5,10 +5,10 @@ __all__ = ['SourceHandler']
 
 # %% ../nbs/01_source.ipynb 5
 import io
-from typing import Dict, Iterable, Optional, Reversible, Sequence, Tuple
+from typing import Dict, Iterable, Optional, Sequence, Tuple
 
 # %% ../nbs/01_source.ipynb 6
-from .transformations import emit_with_transformations, Transformer
+from .transformations import emit_with_transformation, Transformer
 
 # %% ../nbs/01_source.ipynb 7
 def emit_markdown_source(markdown: Iterable[str], stream: io.TextIOBase):
@@ -101,14 +101,14 @@ class SourceHandler:
     def __init__(
         self,
         stream: io.TextIOBase,
-        transformers_map: Dict[str, Reversible[Transformer]] = {},
+        transformers_map: Dict[str, Transformer] = {},
     ):
         self.stream = stream
         self.transformers_map = transformers_map
 
     def emit_markdown(self, lines: Sequence[str]):
-        emit_with_transformations(
-            self.transformers_map.get("markdown/source", []),
+        emit_with_transformation(
+            self.transformers_map.get("markdown/source", Transformer()),
             lines,
             emit_markdown_source,
             self.stream,
@@ -125,8 +125,8 @@ class SourceHandler:
         should_show_output = "output" not in directives or directives["output"] == True
 
         if should_echo:
-            emit_with_transformations(
-                self.transformers_map.get("python/source", []),
+            emit_with_transformation(
+                self.transformers_map.get("python/source", Transformer()),
                 python_source,
                 emit_python_source,
                 self.stream,

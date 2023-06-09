@@ -5,7 +5,7 @@ __all__ = ['export_notebook']
 
 # %% ../nbs/03_api.ipynb 5
 import io
-from typing import Dict, List, Iterable, Reversible, Sequence, Tuple
+from typing import Dict, List, Iterable, Sequence, Tuple
 
 # %% ../nbs/03_api.ipynb 6
 from .transformations import Transformer
@@ -19,7 +19,7 @@ from beetroot.outputs import (
 
 # %% ../nbs/03_api.ipynb 7
 def export_notebook(
-    nb_json: Dict, transformers_map: Dict[str, Reversible[Transformer]] = {}
+    nb_json: Dict, transformers_map: Dict[str, Transformer] = {}
 ) -> Tuple[str, Iterable[Completion]]:
     stream = io.StringIO()
     source_handler = SourceHandler(stream, transformers_map)
