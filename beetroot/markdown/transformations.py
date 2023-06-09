@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['Transformer', 'MultiTransformer', 'emit_with_transformation', 'ReplaceSingleDollarDelimiters',
-           'EscapeUnderscoresWithLatexMath']
+           'EscapeUnderscoresWithLatexMath', 'Unindent']
 
 # %% ../../nbs/markdown/00_transformations.ipynb 5
 import io
@@ -99,5 +99,40 @@ class EscapeUnderscoresWithLatexMath(Transformer):
             )
 
             processed_lines.append(line)
+
+        return processed_lines
+
+# %% ../../nbs/markdown/00_transformations.ipynb 17
+class Unindent(Transformer):
+    """Transformer that removes leading indentation from a set\
+        of lines. Will determine how far indented the first line \
+        is and then remove \
+        min(indentation of first non-empty line, indentation of current line) \
+        for each subsequent line."""
+
+    def process_lines(self, lines: Sequence[str]) -> Sequence[str]:
+        i = 0
+        for i, line in enumerate(lines):
+            if line.strip() != "":
+                break
+
+        # i is now the index of the first line that is not all whitespace
+        # or len(lines)-1 if all the lines were just whitespace.
+
+        if i == len(lines) - 1 and line.strip() == "":
+            # Everything was whitespace, just return it
+            # unmodified
+            return lines
+
+        # If we're here, i is the index of the first line that is not
+        # all whitespace.
+
+        first_line_indent = len(lines[i]) - len(lines[i].lstrip())
+
+        processed_lines = []
+        for line in lines[i:]:
+            cur_indent = len(line) - len(line.lstrip())
+            remove_count = min(first_line_indent, cur_indent)
+            processed_lines.append(line[remove_count:])
 
         return processed_lines

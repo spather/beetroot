@@ -26,7 +26,9 @@ no_op_completion: MarkdownCompletion = lambda _: None
 def emit_lines(lines: Iterable[str], stream: io.TextIOBase):
     for line in lines:
         stream.write(line)
-    if line[-1] != "\n":
+
+    # Emit a newline if the last line didn't end in one.
+    if len(line) == 0 or line[-1] != "\n":
         stream.write("\n")
 
 
