@@ -3,7 +3,9 @@ website:
     contents:
       - index.ipynb
       - 00_transformations.ipynb
-      - 01_source.ipynb
-      - 02_outputs.ipynb
       - 03_api.ipynb
       - 04_cli.ipynb
+      - section: markdown
+        contents:
+          - markdown/01_source.ipynb
+          - markdown/02_outputs.ipynb

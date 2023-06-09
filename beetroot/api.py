@@ -9,10 +9,10 @@ from typing import Dict, List, Iterable, Sequence, Tuple
 
 # %% ../nbs/03_api.ipynb 6
 from .transformations import Transformer
-from beetroot.source import (
+from beetroot.markdown.source import (
     SourceHandler,
 )
-from beetroot.outputs import (
+from beetroot.markdown.outputs import (
     Completion,
     no_op_completion,
     OutputHandler,
