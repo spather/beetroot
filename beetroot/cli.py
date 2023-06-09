@@ -27,11 +27,10 @@ def br_export():
 
     output_path = Path(args.output_dir)
     nb_json = json.loads(Path(args.nb_filename).read_text())
-    markdown, completions = export_notebook(nb_json)
+    markdown, completion = export_notebook(nb_json)
 
-    # Run the completions
-    for completion in completions:
-        completion(output_path)
+    # Run the completion
+    completion(output_path)
 
     # Write the markdown to an output file
     md_filename = output_path / nb_path.with_suffix(".md").name

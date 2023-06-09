@@ -32,11 +32,10 @@ output_path = Path('path/to/output/directory')
 nb_json = json.loads(nb_path.read_text())
 
 # Export the notebook
-markdown, completions = export_notebook(nb_json)
+markdown, completion = export_notebook(nb_json)
 
-# Run the completions to write all external files
-for completion in completions:
-    completion(output_path)
+# Run the completion to write all external files
+completion(output_path)
 
 # Write the markdown to an output file
 md_filename = output_path / nb_path.with_suffix('.md').name

@@ -14,18 +14,19 @@ from beetroot.source import (
 )
 from beetroot.outputs import (
     Completion,
+    no_op_completion,
     OutputHandler,
 )
 
 # %% ../nbs/03_api.ipynb 7
 def export_notebook(
     nb_json: Dict, transformers_map: Dict[str, Transformer] = {}
-) -> Tuple[str, Iterable[Completion]]:
+) -> Tuple[str, Completion]:
     stream = io.StringIO()
     source_handler = SourceHandler(stream, transformers_map)
     output_handler = OutputHandler(stream, transformers_map)
 
-    completions: List[Completion] = []
+    completion = no_op_completion
     for cell in nb_json["cells"]:
         if cell["cell_type"] == "markdown":
             source_handler.emit_markdown(cell["source"])
@@ -41,8 +42,8 @@ def export_notebook(
                 continue
 
             for output in cell["outputs"]:
-                completions.extend(output_handler.handle_output(output))
+                completion = output_handler.handle_output(output)
                 stream.write("\n")
 
     stream.seek(0)
-    return stream.read(), completions
+    return stream.read(), completion
