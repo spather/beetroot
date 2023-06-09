@@ -30,20 +30,14 @@ def export_notebook(
     for cell in nb_json["cells"]:
         if cell["cell_type"] == "markdown":
             source_handler.handle_markdown(cell["source"])
-            stream.write("\n")
         elif cell["cell_type"] == "code":
-            did_echo, should_show_output = source_handler.handle_python_source(
-                cell["source"]
-            )
-            if did_echo:
-                stream.write("\n")
+            should_show_output = source_handler.handle_python_source(cell["source"])
 
             if not should_show_output:
                 continue
 
             for output in cell["outputs"]:
                 completion = output_handler.handle_output(output)
-                stream.write("\n")
 
     stream.seek(0)
     return stream.read(), completion

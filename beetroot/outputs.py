@@ -120,4 +120,6 @@ class OutputHandler:
                 output["data"], self.stream, self.transformers_map
             )
 
+        self.stream.write("\n")
+
         return completion

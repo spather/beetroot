@@ -92,7 +92,7 @@ def handle_python_source(source: Sequence[str], stream: io.TextIOBase):
     stream.write("```python\n")
     for line in source:
         stream.write(line)
-    stream.write("\n```\n\n")
+    stream.write("\n```\n")
 
 # %% ../nbs/01_source.ipynb 13
 class SourceHandler:
@@ -113,8 +113,9 @@ class SourceHandler:
             emit_markdown_source,
             self.stream,
         )
+        self.stream.write("\n")
 
-    def handle_python_source(self, lines: Sequence[str]) -> Tuple[bool, bool]:
+    def handle_python_source(self, lines: Sequence[str]) -> bool:
         python_source, directives = parse_and_extract_directives_from_python_source(
             lines
         )
@@ -131,5 +132,6 @@ class SourceHandler:
                 handle_python_source,
                 self.stream,
             )
+            self.stream.write("\n")
 
-        return should_echo, should_show_output
+        return should_show_output
