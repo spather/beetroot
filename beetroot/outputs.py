@@ -52,20 +52,36 @@ def emit_image_data(
     return [completion]
 
 
-def emit_output_data(data: Dict, stream: io.TextIOBase) -> Iterable[Completion]:
+def emit_output_data(
+    data: Dict,
+    stream: io.TextIOBase,
+    transformers_map: Dict[str, Reversible[Transformer]] = {},
+) -> Iterable[Completion]:
     lines_mimetypes = ["text/markdown", "text/latex", "text/html"]
 
     completions: Iterable[Completion] = []
     for mimetype in lines_mimetypes:
         if mimetype in data:
-            emit_lines(data[mimetype], stream)
+            emit_with_transformations(
+                transformers_map.get(f"{mimetype}/data/output", []),
+                data[mimetype],
+                emit_lines,
+                stream,
+            )
+
             return completions
 
     if "image/png" in data:
         return emit_image_data(data["image/png"], stream)
 
     if "text/plain" in data:
-        emit_plaintext(data["text/plain"], stream)
+        emit_with_transformations(
+            transformers_map.get("text/plain/data/output", []),
+            data["text/plain"],
+            emit_plaintext,
+            stream,
+        )
+
         return completions
 
     return completions
@@ -93,9 +109,13 @@ class OutputHandler:
             )
         elif output_type == "execute_result":
             # Handle [`execute_result`](https://nbformat.readthedocs.io/en/latest/format_description.html#execute-result) outputs.
-            completions.extend(emit_output_data(output["data"], self.stream))
+            completions.extend(
+                emit_output_data(output["data"], self.stream, self.transformers_map)
+            )
         elif output_type == "display_data":
             # Handle [`display_data`](https://nbformat.readthedocs.io/en/latest/format_description.html#display-data) outputs.
-            completions.extend(emit_output_data(output["data"], self.stream))
+            completions.extend(
+                emit_output_data(output["data"], self.stream, self.transformers_map)
+            )
 
         return completions
