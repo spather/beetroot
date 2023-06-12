@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['Transformer', 'MultiTransformer', 'emit_with_transformation', 'ReplaceSingleDollarDelimiters',
-           'EscapeUnderscoresWithinLatexMath', 'Unindent']
+           'EscapeUnderscoresWithinLatexMath', 'EscapeEndLineSlashesWithinLatexMath', 'Unindent']
 
 # %% ../../nbs/markdown/00_transformations.ipynb 5
 import io
@@ -107,6 +107,34 @@ class EscapeUnderscoresWithinLatexMath(Transformer):
         return processed_lines
 
 # %% ../../nbs/markdown/00_transformations.ipynb 17
+class EscapeEndLineSlashesWithinLatexMath(Transformer):
+    """Transformer that replaces slashes ("\\") at the end of lines\
+        within math block expressions expressions with "\\\\".\
+        Handles the case where the "\\" is followed by a line width\
+        e.g. "\\[2em]"."""
+
+    def process_lines(self, lines: Sequence[str]) -> Sequence[str]:
+        regex_block = r"\$\$([\s\S]*?)\$\$"
+
+        # We want to handle cases where math expressions could be in a single
+        # line or spread across multiple lines. So we'll join the lines with
+        # a dummy token separator into a single string, perform the substitutions
+        # and the split back into lines on the dummy token.
+        dummy_token = "DUMMY+TOKEN+DO+NOT+USE"
+        text = dummy_token.join(lines)
+
+        text = re.sub(
+            regex_block,
+            lambda match: re.sub(
+                r"\\\\(?=\[.*?\]$|$)", r"\\\\\\\\", match.group(), flags=re.MULTILINE
+            ),
+            text,
+        )
+
+        processed_lines = text.split(dummy_token)
+        return processed_lines
+
+# %% ../../nbs/markdown/00_transformations.ipynb 19
 class Unindent(Transformer):
     """Transformer that removes leading indentation from a set\
         of lines. Will determine how far indented the first line \
