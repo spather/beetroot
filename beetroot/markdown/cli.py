@@ -13,7 +13,7 @@ from typing import Dict, Protocol
 from ..backend_config import BackendConfig
 from .api import export_markdown_notebook
 from beetroot.markdown.transformations import (
-    EscapeUnderscoresWithLatexMath,
+    EscapeUnderscoresWithinLatexMath,
     MultiTransformer,
     ReplaceSingleDollarDelimiters,
     Unindent,
@@ -36,7 +36,7 @@ class MarkdownBackendConfig(BackendConfig):
 
         # TODO: add transformers dynamically based on cli args
         transformer = MultiTransformer(
-            [EscapeUnderscoresWithLatexMath(), ReplaceSingleDollarDelimiters()]
+            [EscapeUnderscoresWithinLatexMath(), ReplaceSingleDollarDelimiters()]
         )
         markdown, completions = export_markdown_notebook(
             nb_json,

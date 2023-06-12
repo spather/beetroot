@@ -11,7 +11,7 @@ from typing import Dict, Iterable, Sequence, Tuple
 from ..api import handle_notebook
 
 from beetroot.markdown.transformations import (
-    EscapeUnderscoresWithLatexMath,
+    EscapeUnderscoresWithinLatexMath,
     MultiTransformer,
     ReplaceSingleDollarDelimiters,
     Transformer,

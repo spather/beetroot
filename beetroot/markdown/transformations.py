@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['Transformer', 'MultiTransformer', 'emit_with_transformation', 'ReplaceSingleDollarDelimiters',
-           'EscapeUnderscoresWithLatexMath', 'Unindent']
+           'EscapeUnderscoresWithinLatexMath', 'Unindent']
 
 # %% ../../nbs/markdown/00_transformations.ipynb 5
 import io
@@ -78,7 +78,7 @@ class ReplaceSingleDollarDelimiters(Transformer):
         return [re.sub(regex, replacement, line) for line in lines]
 
 # %% ../../nbs/markdown/00_transformations.ipynb 15
-class EscapeUnderscoresWithLatexMath(Transformer):
+class EscapeUnderscoresWithinLatexMath(Transformer):
     """Transformer that replaces underscores within latex\
         math expressions with \_."""
 
