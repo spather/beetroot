@@ -84,22 +84,26 @@ class EscapeUnderscoresWithLatexMath(Transformer):
 
     def process_lines(self, lines: Sequence[str]) -> Sequence[str]:
         regex_inline = r"(?<!\$)\$(?!\$)(.*?[^\\])\$(?!\$)"
-        regex_block = r"\$\$(.*?)\$\$"
+        regex_block = r"\$\$([\s\S]*?)\$\$"
 
-        processed_lines = []
-        for line in lines:
-            # Escaping underscores in inline math expressions
-            line = re.sub(
-                regex_inline, lambda match: re.sub(r"_", r"\_", match.group()), line
-            )
+        # We want to handle cases where math expressions could be in a single
+        # line or spread across multiple lines. So we'll join the lines with
+        # a dummy token separator into a single string, perform the substitutions
+        # and the split back into lines on the dummy token.
+        dummy_token = "DUMMY+TOKEN+DO+NOT+USE"
+        text = dummy_token.join(lines)
 
-            # Escaping underscores in block math expressions
-            line = re.sub(
-                regex_block, lambda match: re.sub(r"_", r"\_", match.group()), line
-            )
+        # Escaping underscores in block math expressions
+        text = re.sub(
+            regex_block, lambda match: re.sub(r"_", r"\_", match.group()), text
+        )
 
-            processed_lines.append(line)
+        # Escaping underscores in inline math expressions
+        text = re.sub(
+            regex_inline, lambda match: re.sub(r"_", r"\_", match.group()), text
+        )
 
+        processed_lines = text.split(dummy_token)
         return processed_lines
 
 # %% ../../nbs/markdown/00_transformations.ipynb 17
