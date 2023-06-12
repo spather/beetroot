@@ -29,7 +29,7 @@ class Transformer:
         return
 
 # %% ../../nbs/markdown/00_transformations.ipynb 10
-class MultiTransformer:
+class MultiTransformer(Transformer):
     def __init__(self, transformers: Iterable[Transformer]):
         # Store the passed in transformers as a list
         # so that we can later call reverse() on it.

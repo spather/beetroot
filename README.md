@@ -10,10 +10,10 @@ pip install beetroot
 
 ## How to use
 
-From the command-line:
+From the command-line, using the markdown backend:
 
 ``` sh
-br_export_md path/to/notebook.ipynb path/to/output_directory
+br_export --backend markdown path/to/notebook.ipynb path/to/output_directory
 ```
 
 As a Python API:
