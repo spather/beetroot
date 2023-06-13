@@ -30,6 +30,31 @@ def export_markdown_notebook(
     python_source_transformer=Transformer(),
     output_transformers_map: Dict[str, Transformer] = {},
 ) -> Tuple[str, Iterable[MarkdownCompletion]]:
+    """Export a notebook as markdown.
+
+
+    Parameters
+    ----------
+    nb_json
+        A Dict containing the notebook contents as parsed from JSON
+
+    markdown_source_transformer
+        Transformer to apply cells whose source type is markdown
+
+    python_source_transformer
+        Transformer to apply cells whose source type is python code
+
+    output_transformers_map
+        A Dict mapping output cell types to transformers
+
+    Returns
+    --------
+        Tuple[str, Iterable[MarkdownCompletion]]
+            A tuple whose first element is the markdown content as
+            a string and whose second element is an iterable of
+            completions to run to serialize all external data such
+            as images.
+    """
     stream = io.StringIO()
     source_handler = MarkdownSourceHandler(
         stream=stream,
