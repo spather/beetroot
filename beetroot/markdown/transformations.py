@@ -233,9 +233,16 @@ class Unindent(Transformer):
 
 # %% ../../nbs/markdown/00_transformations.ipynb 25
 class CodeFoldTransformer(TransformerWithDirectives):
+    """Transformer that implements code folding as per \
+        [Quarto Code Output](https://quarto.org/docs/reference/cells/cells-jupyter.html#code-output)
+        by emitting the Hugo `collapsible` shortcode."""
+
     def emit_before(self, stream: io.TextIOBase):
         code_fold = self.directives.get("code-fold", False)
-        if not code_fold:
+
+        # code-fold must be explicitly set to True or the value 'show'
+        # for code-folding to happen.
+        if code_fold not in [True, "show"]:
             return
 
         summary = self.directives.get("code-summary", "Code")
@@ -244,13 +251,24 @@ class CodeFoldTransformer(TransformerWithDirectives):
         # in the directives.
         assert isinstance(summary, str)
 
-        # TODO: support 'show' value
+        # Include the open param to the shortcode if code-fold was
+        # set to "show".
+        open_param = ""
+        if code_fold == "show":
+            open_param = "open=1 "
+
         stream.write(
-            r'{{% collapsible class="code-fold" summary="' f"{summary}" r'" %}}' "\n"
+            r'{{% collapsible class="code-fold" summary='
+            f'"{summary}" '
+            f"{open_param}"
+            r"%}}"
+            "\n"
         )
 
     def emit_after(self, stream: io.TextIOBase):
         code_fold = self.directives.get("code-fold", False)
-        if not code_fold:
+        # code-fold must be explicitly set to True or the value 'show'
+        # for code-folding to happen.
+        if code_fold not in [True, "show"]:
             return
         stream.write(r"{{% /collapsible %}}" "\n")
