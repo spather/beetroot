@@ -3,10 +3,12 @@ website:
     contents:
       - index.ipynb
       - 00_api.ipynb
+      - 01_backend_config.ipynb
+      - 02_cli.ipynb
       - section: markdown
         contents:
           - markdown/00_transformations.ipynb
           - markdown/01_source.ipynb
           - markdown/02_outputs.ipynb
           - markdown/03_markdown_api.ipynb
-          - markdown/04_cli.ipynb
+          - markdown/04_markdown_cli.ipynb
