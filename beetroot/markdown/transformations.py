@@ -10,7 +10,7 @@ from contextlib import contextmanager
 import io
 import re
 from textwrap import dedent
-from typing import Callable, Dict, Iterable, Optional, Sequence
+from typing import Callable, Dict, Iterable, Optional, Sequence, Union
 
 # %% ../../nbs/markdown/00_transformations.ipynb 6
 class Transformer:
@@ -36,11 +36,11 @@ class TransformerWithDirectives(Transformer):
     """Base class for transformers that use directives."""
 
     def __init__(self) -> None:
-        self.directives: Dict[str, Optional[bool | str]] = {}
+        self.directives: Dict[str, Optional[Union[bool, str]]] = {}
         super().__init__()
 
     @contextmanager
-    def begin_using_directives(self, directives: Dict[str, Optional[bool | str]]):
+    def begin_using_directives(self, directives: Dict[str, Optional[Union[bool, str]]]):
         """
         Factory function for a context manager that ensures the given\
          directives are cleared after they are used. 

@@ -5,7 +5,7 @@ __all__ = ['MarkdownSourceHandler']
 
 # %% ../../nbs/markdown/01_source.ipynb 5
 import io
-from typing import Dict, Iterable, Optional, Sequence, Tuple
+from typing import Dict, Iterable, Optional, Sequence, Tuple, Union
 
 # %% ../../nbs/markdown/01_source.ipynb 6
 from ..api import SourceHandler
@@ -26,7 +26,7 @@ def is_directive_line(line: str):
     return line.startswith("#|") or line.startswith("# |")
 
 
-def parse_directive_line(line: str) -> Tuple[str, Optional[bool | str]]:
+def parse_directive_line(line: str) -> Tuple[str, Optional[Union[bool, str]]]:
     assert is_directive_line(line)
 
     directive = line.lstrip("# |").strip()
@@ -87,7 +87,7 @@ def parse_directive_line(line: str) -> Tuple[str, Optional[bool | str]]:
 # %% ../../nbs/markdown/01_source.ipynb 10
 def parse_and_extract_directives_from_python_source(
     source: Sequence[str],
-) -> Tuple[Sequence[str], Dict[str, Optional[bool | str]]]:
+) -> Tuple[Sequence[str], Dict[str, Optional[Union[bool, str]]]]:
     directives = {}
     i = 0  # initialize explicitly because `source` may be empty
     for i, line in enumerate(source):
