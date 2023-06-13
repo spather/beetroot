@@ -25,11 +25,18 @@ from .outputs import MarkdownOutputHandler, MarkdownCompletion
 
 # %% ../../nbs/markdown/03_markdown_api.ipynb 7
 def export_markdown_notebook(
-    nb_json: Dict, transformers_map: Dict[str, Transformer] = {}
+    nb_json: Dict,
+    markdown_source_transformer=Transformer(),
+    python_source_transformer=Transformer(),
+    output_transformers_map: Dict[str, Transformer] = {},
 ) -> Tuple[str, Iterable[MarkdownCompletion]]:
     stream = io.StringIO()
-    source_handler = MarkdownSourceHandler(stream, transformers_map)
-    output_handler = MarkdownOutputHandler(stream, transformers_map)
+    source_handler = MarkdownSourceHandler(
+        stream=stream,
+        markdown_source_transformer=markdown_source_transformer,
+        python_source_transformer=python_source_transformer,
+    )
+    output_handler = MarkdownOutputHandler(stream, output_transformers_map)
 
     completions = handle_notebook(nb_json, source_handler, output_handler)
 

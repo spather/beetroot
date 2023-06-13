@@ -47,8 +47,8 @@ class MarkdownBackendConfig(BackendConfig):
         )
         markdown, completions = export_markdown_notebook(
             nb_json,
-            transformers_map={
-                "markdown/source": transformer,
+            markdown_source_transformer=transformer,
+            output_transformers_map={
                 "text/markdown/data/output": transformer,
                 "text/latex/data/output": transformer,
                 "text/html/data/output": Unindent(),

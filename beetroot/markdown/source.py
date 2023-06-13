@@ -102,14 +102,16 @@ class MarkdownSourceHandler(SourceHandler):
     def __init__(
         self,
         stream: io.TextIOBase,
-        transformers_map: Dict[str, Transformer] = {},
+        markdown_source_transformer=Transformer(),
+        python_source_transformer=Transformer(),
     ):
         self.stream = stream
-        self.transformers_map = transformers_map
+        self.markdown_source_transformer = markdown_source_transformer
+        self.python_source_transformer = python_source_transformer
 
     def handle_markdown(self, lines: Sequence[str]):
         emit_with_transformation(
-            self.transformers_map.get("markdown/source", Transformer()),
+            self.markdown_source_transformer,
             lines,
             emit_markdown_source,
             self.stream,
@@ -128,7 +130,7 @@ class MarkdownSourceHandler(SourceHandler):
 
         if should_echo:
             emit_with_transformation(
-                self.transformers_map.get("python/source", Transformer()),
+                self.python_source_transformer,
                 python_source,
                 handle_python_source,
                 self.stream,
