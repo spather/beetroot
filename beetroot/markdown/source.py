@@ -98,7 +98,13 @@ def parse_and_extract_directives_from_python_source(
             # Break out on hitting the first non-directive line
             break
 
-    return source[i:], directives
+    # Consume any blank lines after the directives:
+    j = 0  # initialize explicitly because `source[i:]` may be empty
+    for j, line in enumerate(source[i:]):
+        if len(line.strip()) > 0:
+            break
+
+    return source[i + j :], directives
 
 # %% ../../nbs/markdown/01_source.ipynb 12
 def handle_python_source(source: Sequence[str], stream: io.TextIOBase):
