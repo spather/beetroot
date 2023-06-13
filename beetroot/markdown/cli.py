@@ -13,6 +13,7 @@ from typing import Dict, Protocol
 from ..backend_config import BackendConfig
 from .api import export_markdown_notebook
 from beetroot.markdown.transformations import (
+    CodeFoldTransformer,
     EscapeEndLineSlashesWithinLatexMath,
     EscapeEqualsSignsAtLineStartWithinLatexMath,
     EscapeUnderscoresWithinLatexMath,
@@ -48,6 +49,7 @@ class MarkdownBackendConfig(BackendConfig):
         markdown, completions = export_markdown_notebook(
             nb_json,
             markdown_source_transformer=transformer,
+            python_source_transformer=CodeFoldTransformer(),
             output_transformers_map={
                 "text/markdown/data/output": transformer,
                 "text/latex/data/output": transformer,

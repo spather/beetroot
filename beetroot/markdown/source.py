@@ -9,7 +9,11 @@ from typing import Dict, Iterable, Optional, Sequence, Tuple
 
 # %% ../../nbs/markdown/01_source.ipynb 6
 from ..api import SourceHandler
-from .transformations import emit_with_transformation, Transformer
+from beetroot.markdown.transformations import (
+    emit_with_transformation,
+    Transformer,
+    TransformerWithDirectives,
+)
 
 # %% ../../nbs/markdown/01_source.ipynb 7
 def emit_markdown_source(markdown: Iterable[str], stream: io.TextIOBase):
@@ -22,7 +26,7 @@ def is_directive_line(line: str):
     return line.startswith("#|") or line.startswith("# |")
 
 
-def parse_directive_line(line: str) -> Tuple[str, Optional[bool]]:
+def parse_directive_line(line: str) -> Tuple[str, Optional[bool | str]]:
     assert is_directive_line(line)
 
     directive = line.lstrip("# |").strip()
@@ -32,6 +36,10 @@ def parse_directive_line(line: str) -> Tuple[str, Optional[bool]]:
     assert len(parts) == 1 or len(parts) == 2
     key, *value_list = parts
     value_str: Optional[str] = value_list[0] if value_list else None
+
+    # There was no value; treat it as None
+    if value_str is None:
+        return key, None
 
     # Deal with string forms of true and false
     # These directives are technically YAML, so allowing all the values
@@ -70,12 +78,16 @@ def parse_directive_line(line: str) -> Tuple[str, Optional[bool]]:
     elif value_str in false_vals:
         value = False
 
-    return key, value
+    if value is not None:
+        return key, value
+
+    # We couldn't parse a bool value, just return the key and the string
+    return key, value_str
 
 # %% ../../nbs/markdown/01_source.ipynb 10
 def parse_and_extract_directives_from_python_source(
     source: Sequence[str],
-) -> Tuple[Sequence[str], Dict[str, Optional[bool]]]:
+) -> Tuple[Sequence[str], Dict[str, Optional[bool | str]]]:
     directives = {}
     i = 0  # initialize explicitly because `source` may be empty
     for i, line in enumerate(source):
@@ -102,8 +114,8 @@ class MarkdownSourceHandler(SourceHandler):
     def __init__(
         self,
         stream: io.TextIOBase,
-        markdown_source_transformer=Transformer(),
-        python_source_transformer=Transformer(),
+        markdown_source_transformer: Transformer = Transformer(),
+        python_source_transformer: TransformerWithDirectives = TransformerWithDirectives(),
     ):
         self.stream = stream
         self.markdown_source_transformer = markdown_source_transformer
@@ -129,12 +141,13 @@ class MarkdownSourceHandler(SourceHandler):
         should_show_output = "output" not in directives or directives["output"] == True
 
         if should_echo:
-            emit_with_transformation(
-                self.python_source_transformer,
-                python_source,
-                handle_python_source,
-                self.stream,
-            )
-            self.stream.write("\n")
+            with self.python_source_transformer.begin_using_directives(directives):
+                emit_with_transformation(
+                    self.python_source_transformer,
+                    python_source,
+                    handle_python_source,
+                    self.stream,
+                )
+                self.stream.write("\n")
 
         return should_show_output
