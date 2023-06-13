@@ -14,6 +14,7 @@ from ..backend_config import BackendConfig
 from .api import export_markdown_notebook
 from beetroot.markdown.transformations import (
     EscapeEndLineSlashesWithinLatexMath,
+    EscapeEqualsSignsAtLineStartWithinLatexMath,
     EscapeUnderscoresWithinLatexMath,
     MultiTransformer,
     ReplaceSingleDollarDelimiters,
@@ -40,6 +41,7 @@ class MarkdownBackendConfig(BackendConfig):
             [
                 EscapeUnderscoresWithinLatexMath(),
                 EscapeEndLineSlashesWithinLatexMath(),
+                EscapeEqualsSignsAtLineStartWithinLatexMath(),
                 ReplaceSingleDollarDelimiters(),
             ]
         )
