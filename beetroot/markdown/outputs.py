@@ -5,11 +5,11 @@ __all__ = ['MarkdownCompletion', 'no_op_completion', 'MarkdownOutputHandler']
 
 # %% ../../nbs/markdown/02_outputs.ipynb 5
 import base64
+from hashlib import sha256
 import io
 from pathlib import Path
 from textwrap import dedent
 from typing import Callable, Dict, Iterable
-import uuid
 
 # %% ../../nbs/markdown/02_outputs.ipynb 6
 from ..api import OutputHandler
@@ -38,13 +38,17 @@ def emit_plaintext(lines: Iterable[str], stream: io.TextIOBase):
     stream.write("```\n")
 
 
+def filename_from_image_bytes(bytes: bytes) -> str:
+    return sha256(bytes).hexdigest()
+
+
 def emit_image_data(
     img_data_b64: str,
     stream: io.TextIOBase,
-    filename_generator: Callable[[], str] = lambda: str(uuid.uuid4()),
+    filename_generator: Callable[[bytes], str] = filename_from_image_bytes,
 ) -> MarkdownCompletion:
     bytes = base64.b64decode(img_data_b64)
-    filename = f"{filename_generator()}.png"
+    filename = f"{filename_generator(bytes)}.png"
     images_dir = "images/"
 
     def completion(output_dir: Path) -> None:
