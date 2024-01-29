@@ -11,21 +11,15 @@ from typing import Dict, Iterable, Sequence, Tuple
 from ..api import handle_notebook
 
 from beetroot.markdown.transformations import (
-    CodeFoldTransformer,
-    EscapeEndLineSlashesWithinLatexMath,
-    EscapeUnderscoresWithinLatexMath,
-    MultiTransformer,
-    ReplaceSingleDollarDelimiters,
     Transformer,
     TransformerWithDirectives,
-    Unindent,
 )
 from beetroot.markdown.source import (
     MarkdownSourceHandler,
 )
 from .outputs import MarkdownOutputHandler, MarkdownCompletion
 
-# %% ../../nbs/markdown/03_markdown_api.ipynb 7
+# %% ../../nbs/markdown/03_markdown_api.ipynb 8
 def export_markdown_notebook(
     nb_json: Dict,
     markdown_source_transformer: Transformer = Transformer(),
