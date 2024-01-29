@@ -22,15 +22,15 @@ class SourceHandler(Protocol):
 
     def handle_python_source(self, lines: Sequence[str]) -> bool:
         """Handle the source lines for a python code cell
-        
+
         Parameters
         ----------
-        lines 
+        lines
             The lines of source text
 
         Returns
         -------
-        bool 
+        bool
             Indicates whether the output should be handled for \
             this cell.
         """
@@ -45,11 +45,11 @@ class OutputHandler(Protocol[TOutputResult]):
 
     def handle_output(self, output: Dict) -> TOutputResult:
         """Handle a single cell output
-        
+
         Parameters
         ----------
         output
-            a Dict representing a JSON output element as \ 
+            a Dict representing a JSON output element as \
             defined in the [notebook file format](https://nbformat.readthedocs.io/en/latest/format_description.html#code-cell-outputs)
 
         Returns
@@ -57,7 +57,7 @@ class OutputHandler(Protocol[TOutputResult]):
         TOutputResult
             a result whose type is defined by the implementation \
             (typically a callable that completes any \
-            asynchronous processing required)                    
+            asynchronous processing required)
         """
         pass
 
@@ -74,7 +74,7 @@ def handle_notebook(
     ----------
     nb_json
         A Dict representing the content of a notebook as JSON
-    
+
     source_handler
         A handler for source elements that conforms to the \
         `SourceHandler` protocol

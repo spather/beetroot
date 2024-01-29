@@ -43,11 +43,11 @@ class TransformerWithDirectives(Transformer):
     def begin_using_directives(self, directives: Dict[str, Optional[Union[bool, str]]]):
         """
         Factory function for a context manager that ensures the given\
-         directives are cleared after they are used. 
-        
+         directives are cleared after they are used.
+
         Parameters
         ----------
-        directives: A map of directives to be used in this transformer's 
+        directives: A map of directives to be used in this transformer's
                     processing
 
         Returns

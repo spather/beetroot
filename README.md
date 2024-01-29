@@ -19,8 +19,8 @@ br_export --backend markdown path/to/notebook.ipynb path/to/output_directory
 As a Python API:
 
 ``` python
-import json 
-from pathlib import Path 
+import json
+from pathlib import Path
 
 from beetroot.markdown.api import export_markdown_notebook
 
