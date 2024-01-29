@@ -3,7 +3,8 @@
 # %% auto 0
 __all__ = ['Transformer', 'TransformerWithDirectives', 'MultiTransformer', 'emit_with_transformation',
            'ReplaceSingleDollarDelimiters', 'EscapeUnderscoresWithinLatexMath', 'EscapeEndLineSlashesWithinLatexMath',
-           'EscapeEqualsSignsAtLineStartWithinLatexMath', 'Unindent', 'CodeFoldTransformer']
+           'EscapeEqualsSignsAtLineStartWithinLatexMath', 'Unindent', 'CodeFoldTransformer',
+           'RemoveTrailingWhitespaceLeavingFinalNewline']
 
 # %% ../../nbs/markdown/00_transformations.ipynb 5
 from contextlib import contextmanager
@@ -272,3 +273,18 @@ class CodeFoldTransformer(TransformerWithDirectives):
         if code_fold not in [True, "show"]:
             return
         stream.write(r"{{% /collapsible %}}" "\n")
+
+# %% ../../nbs/markdown/00_transformations.ipynb 27
+class RemoveTrailingWhitespaceLeavingFinalNewline(Transformer):
+    """Transformer that removes trailing whitespace but leaves a
+    final newline in place if present."""
+
+    def process_lines(self, lines: Sequence[str]) -> Sequence[str]:
+        processed_lines = []
+        for line in lines:
+            if line.endswith("\n"):
+                processed_lines.append(line.rstrip() + "\n")
+            else:
+                processed_lines.append(line.rstrip())
+
+        return processed_lines

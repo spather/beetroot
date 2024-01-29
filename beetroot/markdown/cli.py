@@ -18,6 +18,7 @@ from beetroot.markdown.transformations import (
     EscapeEqualsSignsAtLineStartWithinLatexMath,
     EscapeUnderscoresWithinLatexMath,
     MultiTransformer,
+    RemoveTrailingWhitespaceLeavingFinalNewline,
     ReplaceSingleDollarDelimiters,
     Unindent,
 )
@@ -43,6 +44,7 @@ class MarkdownBackendConfig(BackendConfig):
                 EscapeUnderscoresWithinLatexMath(),
                 EscapeEndLineSlashesWithinLatexMath(),
                 EscapeEqualsSignsAtLineStartWithinLatexMath(),
+                RemoveTrailingWhitespaceLeavingFinalNewline(),
                 ReplaceSingleDollarDelimiters(),
             ]
         )
