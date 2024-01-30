@@ -110,13 +110,31 @@ def parse_and_extract_directives_from_python_source(
     return source[i + j :], directives
 
 # %% ../../nbs/markdown/01_source.ipynb 12
+def interpret_directives(
+    directives: Dict[str, Optional[Union[bool, str]]]
+) -> Tuple[bool, bool]:
+    # Handle directives per:
+    # * https://quarto.org/docs/reference/cells/cells-jupyter.html#code-output
+    # * https://quarto.org/docs/reference/cells/cells-jupyter.html#cell-output
+    # * https://nbdev.fast.ai/explanations/directives.html#hide
+    should_echo = "hide" not in directives and (
+        "echo" not in directives or directives["echo"] == True
+    )
+
+    should_show_output = "hide" not in directives and (
+        "output" not in directives or directives["output"] == True
+    )
+
+    return should_echo, should_show_output
+
+# %% ../../nbs/markdown/01_source.ipynb 14
 def handle_python_source(source: Sequence[str], stream: io.TextIOBase):
     stream.write("```python\n")
     for line in source:
         stream.write(line)
     stream.write("\n```\n")
 
-# %% ../../nbs/markdown/01_source.ipynb 13
+# %% ../../nbs/markdown/01_source.ipynb 15
 class MarkdownSourceHandler(SourceHandler):
     """High-level API for handling cell source"""
 
@@ -144,10 +162,7 @@ class MarkdownSourceHandler(SourceHandler):
             lines
         )
 
-        # Handle directives per https://quarto.org/docs/reference/cells/cells-jupyter.html#code-output
-        # and https://quarto.org/docs/reference/cells/cells-jupyter.html#cell-output.
-        should_echo = "echo" not in directives or directives["echo"] == True
-        should_show_output = "output" not in directives or directives["output"] == True
+        should_echo, should_show_output = interpret_directives(directives)
 
         if should_echo:
             with self.python_source_transformer.begin_using_directives(directives):
