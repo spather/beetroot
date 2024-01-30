@@ -53,6 +53,7 @@ class MarkdownBackendConfig(BackendConfig):
             markdown_source_transformer=transformer,
             python_source_transformer=CodeFoldTransformer(),
             output_transformers_map={
+                "stream/output": RemoveTrailingWhitespaceLeavingFinalNewline(),
                 "text/markdown/data/output": transformer,
                 "text/latex/data/output": transformer,
                 "text/html/data/output": Unindent(),
