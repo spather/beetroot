@@ -30,12 +30,15 @@ def parse_directive_line(line: str) -> Tuple[str, Optional[Union[bool, str]]]:
     assert is_directive_line(line)
 
     directive = line.lstrip("# |").strip()
-    parts = [part.strip() for part in directive.split(":")]
 
     # A directive is either a single key or key: value
-    assert len(parts) == 1 or len(parts) == 2
-    key, *value_list = parts
-    value_str: Optional[str] = value_list[0] if value_list else None
+    key = directive
+    value_str: Optional[str] = None
+
+    colon_index = directive.find(":")
+    if colon_index != -1:
+        key = directive[:colon_index].strip()
+        value_str = directive[colon_index + 1 :].strip()
 
     # There was no value; treat it as None
     if value_str is None:
